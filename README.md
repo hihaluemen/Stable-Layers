@@ -1,7 +1,13 @@
 # Stable Layers — Inference
 
 Decomposes an image into ordered layers (background + separated objects) using
-**Qwen-Image-Layered** with a GRPO-trained LoRA.
+**Qwen-Image-Layered** with a Stable Layers LoRA.
+
+Project Page: https://stability-ai.github.io/stable-layers.github.io/
+
+Paper: https://arxiv.org/abs/2605.30257
+
+Note: whilst the paper used gemini, this model was retrained using an open VLM, we found no performance loss.
 
 ---
 
