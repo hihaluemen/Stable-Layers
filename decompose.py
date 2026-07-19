@@ -245,7 +245,7 @@ def main():
     )
     ap.add_argument("--input", required=True, help="image file or directory of images")
     ap.add_argument("--output", required=True, help="output directory")
-    ap.add_argument("--lora", default=str(Path(__file__).parent / "checkpoint-600"),
+    ap.add_argument("--lora", default=str(Path(__file__).parent / "model"),
                     help="path to the LoRA adapter directory")
     ap.add_argument("--base-model", default="Qwen/Qwen-Image-Layered",
                     help="base model (HuggingFace id or local path)")
