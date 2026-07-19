@@ -58,7 +58,7 @@ python decompose.py --input images/ --output results/
 python decompose.py --input images/ --output results/ --transparent
 
 # explicit LoRA location
-python decompose.py --input photo.png --output results/ --lora ./checkpoint-600
+python decompose.py --input photo.png --output results/ --lora ./model
 ```
 
 ---
