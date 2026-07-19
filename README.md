@@ -1,18 +1,13 @@
-# Layer Decomposition — Inference
+# Stable Layers — Inference
 
 Decomposes an image into ordered layers (background + separated objects) using
 **Qwen-Image-Layered** with a GRPO-trained LoRA.
 
 ---
 
-## ⚠️ Recommended inference settings — USE THESE
+## Recommended inference settings
 
 > ### **Heun sampler · 50 steps · CFG 1.0 · 640 px · 4 layers**
-
-These are the settings every published result was produced with, and they are
-the **defaults** in `decompose.py`. If you override them the script prints a
-warning — lowering the step count or raising CFG visibly degrades the
-decomposition (blurrier background inpainting, mushier layer boundaries).
 
 | Setting | Value | Flag |
 |---|---|---|
@@ -22,9 +17,7 @@ decomposition (blurrier background inpainting, mushier layer boundaries).
 | Resolution | 640 px (max dim) | `--size 640` |
 | Layers | 4 | `--num-layers 4` |
 
-**Note:** 50 Heun steps ≈ **100 model evaluations** — Heun is second order, so
-each step runs two forward passes. That is by design; don't "optimise" it by
-halving the steps.
+**Note:** with using a high resolution or lower steps or not heun will garble the results.
 
 ---
 
@@ -44,19 +37,6 @@ Requires **one GPU** — the base model is ~40 GB in bf16, so an 80 GB-class car
 
 The base model is pulled from HuggingFace automatically
 (`Qwen/Qwen-Image-Layered`). You supply the LoRA adapter:
-
-```
-checkpoint-600/
-  adapter_config.json
-  adapter_model.safetensors    # ~316 MB
-```
-
-By default `decompose.py` looks for `checkpoint-600/` next to the script; point
-elsewhere with `--lora /path/to/adapter`.
-
-> **The LoRA is ~316 MB, which exceeds GitHub's 100 MB per-file limit.** Don't
-> commit it directly — use Git LFS, or host it (e.g. on the HuggingFace Hub) and
-> download it alongside this script.
 
 ---
 
