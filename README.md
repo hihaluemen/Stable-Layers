@@ -36,7 +36,7 @@ Requires **one GPU** — the base model is ~40 GB in bf16, so an 80 GB-class car
 ## Weights
 
 The base model is pulled from HuggingFace automatically
-(`Qwen/Qwen-Image-Layered`). You supply the LoRA adapter:
+(`Qwen/Qwen-Image-Layered`). LoRa adapter found here: https://huggingface.co/StabilityLabs/Stable-Layers
 
 ---
 
