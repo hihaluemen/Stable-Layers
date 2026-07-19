@@ -1,4 +1,4 @@
-# Layer Decomposition — Inference
+# Stable Layers — Inference
 
 Decomposes an image into ordered layers (background + separated objects) using
 **Qwen-Image-Layered** with a GRPO-trained LoRA.
