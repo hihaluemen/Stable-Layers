@@ -1,7 +1,6 @@
 # Stable Layers — Inference
 
-Decomposes an image into ordered layers (background + separated objects) using
-**Qwen-Image-Layered** with a Stable Layers LoRA.
+Model: https://huggingface.co/StabilityLabs/Stable-Layers
 
 Project Page: https://stability-ai.github.io/stable-layers.github.io/
 
