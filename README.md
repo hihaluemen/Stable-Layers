@@ -1,0 +1,111 @@
+# Layer Decomposition — Inference
+
+Decomposes an image into ordered layers (background + separated objects) using
+**Qwen-Image-Layered** with a GRPO-trained LoRA.
+
+---
+
+## ⚠️ Recommended inference settings — USE THESE
+
+> ### **Heun sampler · 50 steps · CFG 1.0 · 640 px · 4 layers**
+
+These are the settings every published result was produced with, and they are
+the **defaults** in `decompose.py`. If you override them the script prints a
+warning — lowering the step count or raising CFG visibly degrades the
+decomposition (blurrier background inpainting, mushier layer boundaries).
+
+| Setting | Value | Flag |
+|---|---|---|
+| **Sampler** | **Heun (2nd order)** | always used — not configurable |
+| **Steps** | **50** | `--steps 50` |
+| **CFG / guidance** | **1.0 (off)** | `--guidance-scale 1.0` |
+| Resolution | 640 px (max dim) | `--size 640` |
+| Layers | 4 | `--num-layers 4` |
+
+**Note:** 50 Heun steps ≈ **100 model evaluations** — Heun is second order, so
+each step runs two forward passes. That is by design; don't "optimise" it by
+halving the steps.
+
+---
+
+## Install
+
+```bash
+pip install torch diffusers transformers peft pillow numpy
+```
+
+Tested with `torch 2.11`, `diffusers 0.37`, `transformers 5.5`, `peft 0.18`.
+Requires **one GPU** — the base model is ~40 GB in bf16, so an 80 GB-class card
+(A100-80 / H100 / H200) is comfortable.
+
+---
+
+## Weights
+
+The base model is pulled from HuggingFace automatically
+(`Qwen/Qwen-Image-Layered`). You supply the LoRA adapter:
+
+```
+checkpoint-600/
+  adapter_config.json
+  adapter_model.safetensors    # ~316 MB
+```
+
+By default `decompose.py` looks for `checkpoint-600/` next to the script; point
+elsewhere with `--lora /path/to/adapter`.
+
+> **The LoRA is ~316 MB, which exceeds GitHub's 100 MB per-file limit.** Don't
+> commit it directly — use Git LFS, or host it (e.g. on the HuggingFace Hub) and
+> download it alongside this script.
+
+---
+
+## Usage
+
+```bash
+# single image
+python decompose.py --input photo.png --output results/
+
+# a directory of images
+python decompose.py --input images/ --output results/
+
+# RGBA layers with real alpha (for compositing / editors)
+python decompose.py --input images/ --output results/ --transparent
+
+# explicit LoRA location
+python decompose.py --input photo.png --output results/ --lora ./checkpoint-600
+```
+
+---
+
+## Output
+
+```
+results/<image_name>/
+  source.png       # input, resized
+  composite.png    # layers recomposited — compare against source as a sanity check
+  layer_0.png      # background (inpainted behind the removed objects)
+  layer_1.png      # object layers, back-to-front
+  layer_2.png
+  layer_3.png
+```
+
+Layers are ordered back-to-front: `layer_0` is the background, higher indices sit
+on top. Not every image needs all 4 — unused layers come out blank, which is
+normal.
+
+By default layers are composited onto **white** (easy to eyeball). Pass
+`--transparent` to get **RGBA with real alpha**, which is what you want when
+importing into an editor or compositing them yourself.
+
+---
+
+## Notes
+
+- **Reproducible:** noise is seeded per image as `seed + image_index`
+  (`--seed 42` by default), so the same inputs give the same outputs.
+- **Prompt:** decomposition is driven by the source image; the text prompt only
+  nudges guidance. The default (`"a clean, well composed image"`) is fine —
+  override with `--prompt` if you want.
+- **Aspect ratio** is preserved; the longest side is scaled to `--size` and both
+  dimensions are rounded to multiples of 16.
