@@ -4,12 +4,9 @@
   <strong>Decomposing Images into Editable RGBA Layers</strong>
 </p>
 
-<!-- Add a teaser image at media/stable_layers_teaser.jpg and it will render here. -->
-<!--
 <p align="center">
-  <img src="media/stable_layers_teaser.jpg" alt="Stable Layers Teaser" width="100%" />
+  <img src="https://stability-ai.github.io/stable-layers.github.io/assets/images/teaser.png" alt="Stable Layers Teaser" width="100%" />
 </p>
--->
 
 <p align="center">
   <span><a href="https://arxiv.org/abs/2605.30257">Paper</a></span>&nbsp;&nbsp;&nbsp;
