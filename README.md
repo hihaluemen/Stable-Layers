@@ -1,7 +1,7 @@
-<p align="left">
-  <strong>
-    Stable Layers: Decomposing Images into Editable RGBA Layers
-  </strong>
+<h1 align="center">Stable Layers</h1>
+
+<p align="center">
+  <strong>Decomposing Images into Editable RGBA Layers</strong>
 </p>
 
 <!-- Add a teaser image at media/stable_layers_teaser.jpg and it will render here. -->
