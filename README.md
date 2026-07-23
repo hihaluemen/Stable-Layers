@@ -21,9 +21,8 @@ This is an inference-only release of **Stable Layers**, a model that decomposes 
 single RGB image into a small stack of back-to-front RGBA layers (background plus
 object layers) suitable for compositing and editing.
 
-The model is a LoRA adapter over `Qwen/Qwen-Image-Layered`. Note: whilst the paper
-used Gemini, this model was retrained using an open VLM, and we found no performance
-loss.
+The model is a LoRA adapter over `Qwen/Qwen-Image-Layered`. This model was trained
+using Qwen 3.5 9b as the VLM teacher.
 
 ## Repository Layout
 
