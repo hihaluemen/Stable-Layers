@@ -31,12 +31,11 @@ print('torch cuda:', torch.version.cuda)
 print('cuda available:', torch.cuda.is_available())
 PY
 
-# 只补充推理包，不重复安装 torch。
+# 只补充推理包，不重复安装 torch。这里使用清华 PyPI 镜像。
 python -m pip install \
-  'diffusers==0.37.*' \
-  'transformers==5.5.*' \
-  'peft==0.18.*' \
-  pillow numpy safetensors accelerate
+  -i https://pypi.tuna.tsinghua.edu.cn/simple \
+  --no-cache-dir \
+  -r requirements-server.txt
 python -m pip install -r requirements-server.txt
 ```
 
@@ -48,16 +47,19 @@ python -m pip install -r requirements-server.txt
 
 ```bash
 export HF_ENDPOINT=https://hf-mirror.com
-export HF_HOME=/data/huggingface
-export HF_HUB_CACHE=/data/huggingface/hub
+export MODEL_CACHE_DIR="$PWD/models/huggingface"
+export HF_HOME="$MODEL_CACHE_DIR"
+export HF_HUB_CACHE="$MODEL_CACHE_DIR/hub"
 export HF_HUB_ENABLE_HF_TRANSFER=1
-mkdir -p "$HF_HOME" "$HF_HUB_CACHE"
+export TRANSFORMERS_CACHE="$MODEL_CACHE_DIR/transformers"
+mkdir -p "$HF_HOME" "$HF_HUB_CACHE" "$TRANSFORMERS_CACHE"
 
 python - <<'PY'
+import os
 from huggingface_hub import snapshot_download
 print(snapshot_download(
     'Qwen/Qwen-Image-Layered',
-    cache_dir='/data/huggingface/hub',
+    cache_dir=os.environ['HF_HUB_CACHE'],
     resume_download=True,
 ))
 PY

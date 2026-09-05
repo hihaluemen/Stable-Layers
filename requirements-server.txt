@@ -1,2 +1,13 @@
+# torch/CUDA are supplied by the cloud GPU image and intentionally omitted.
+diffusers==0.37.*
+transformers==5.5.*
+peft==0.18.*
+pillow
+numpy
+safetensors
+accelerate
+huggingface_hub
+hf-transfer
 fastapi>=0.115,<1
 uvicorn[standard]>=0.30,<1
+python-multipart
