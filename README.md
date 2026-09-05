@@ -102,6 +102,10 @@ Check it with `GET /health`, then send an image to
 GPU. The wrapper invokes the published CLI for each request, so it is intended
 for validation and low-volume use until a long-lived pipeline worker is added.
 
+Cloud GPU images commonly ship with a working CUDA and PyTorch installation.
+Keep it when `torch.cuda.is_available()` is true; install only missing Python
+packages instead of forcing another torch/CUDA wheel.
+
 ## Outputs
 
 ```

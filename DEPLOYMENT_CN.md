@@ -23,8 +23,16 @@ cd Stable-Layers
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
+# 云厂商镜像通常已预装 torch/CUDA，先检查并保留可用环境。
+python - <<'PY'
+import torch
+print('torch:', torch.__version__)
+print('torch cuda:', torch.version.cuda)
+print('cuda available:', torch.cuda.is_available())
+PY
+
+# 只补充推理包，不重复安装 torch。
 python -m pip install \
-  'torch==2.11.*' \
   'diffusers==0.37.*' \
   'transformers==5.5.*' \
   'peft==0.18.*' \
@@ -32,7 +40,7 @@ python -m pip install \
 python -m pip install -r requirements-server.txt
 ```
 
-如果云厂商提供 CUDA 专用 PyTorch 源，按其说明安装匹配当前驱动的 torch；不要混装 CPU 版 torch。
+如果检查发现 torch 缺失或 CUDA 不可用，才按云厂商说明安装匹配驱动的版本，例如 torch 2.12 + CUDA 13.0。已有可用 torch 时不要重复安装其他 CUDA 轮子。
 
 ## 3. 国内 Hugging Face 镜像和模型下载
 
