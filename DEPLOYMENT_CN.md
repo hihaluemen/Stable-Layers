@@ -81,7 +81,7 @@ print(path)
 PY
 ```
 
-检查 LoRA 文件：
+检查 LoRA 文件（必须成功后再运行推理）：
 
 如果出现 `cas-server.xethub.hf.co`、`401 Unauthorized` 或 `File reconstruction error`，通常是 Xet 网络/认证失败，不是磁盘已满。保留缓存目录后重新运行下载命令即可续传：
 
@@ -96,6 +96,12 @@ test -f model/adapter_model.safetensors
 sha256sum model/adapter_config.json model/adapter_model.safetensors
 ```
 
+如果检查失败，查找实际下载位置：
+
+```bash
+find model -maxdepth 3 -type f \( -name adapter_config.json -o -name adapter_model.safetensors \) -print
+```
+
 如果镜像不稳定，可以在网络较好的机器下载 `/data/huggingface` 后用 `rsync --partial --progress` 传到 GPU 主机。不要把 Hugging Face token、模型权重或 `.env` 提交到 Git。
 
 ## 4. 先跑离线测试
@@ -107,8 +113,8 @@ export HF_HOME=/data/huggingface
 export STABLE_LAYERS_LORA=$PWD/model
 
 python decompose.py \
-  --input /path/to/source.png \
-  --output /data/stable-layers-output \
+  --input 1.png \
+  --output "$PWD/stable-layers-output" \
   --lora "$PWD/model" \
   --base-model Qwen/Qwen-Image-Layered \
   --steps 50 \
