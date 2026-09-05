@@ -50,7 +50,8 @@ export HF_ENDPOINT=https://hf-mirror.com
 export MODEL_CACHE_DIR="$PWD/models/huggingface"
 export HF_HOME="$MODEL_CACHE_DIR"
 export HF_HUB_CACHE="$MODEL_CACHE_DIR/hub"
-export HF_HUB_ENABLE_HF_TRANSFER=1
+export HF_HUB_DISABLE_XET=1
+unset HF_HUB_ENABLE_HF_TRANSFER
 export TRANSFORMERS_CACHE="$MODEL_CACHE_DIR/transformers"
 mkdir -p "$HF_HOME" "$HF_HUB_CACHE" "$TRANSFORMERS_CACHE"
 
@@ -60,12 +61,18 @@ from huggingface_hub import snapshot_download
 print(snapshot_download(
     'Qwen/Qwen-Image-Layered',
     cache_dir=os.environ['HF_HUB_CACHE'],
-    resume_download=True,
 ))
 PY
 ```
 
 检查 fork 的 LoRA 文件：
+
+如果出现 `cas-server.xethub.hf.co`、`401 Unauthorized` 或 `File reconstruction error`，通常是 Xet 网络/认证失败，不是磁盘已满。保留缓存目录后重新运行下载命令即可续传：
+
+```bash
+df -h .
+du -sh "$MODEL_CACHE_DIR"
+```
 
 ```bash
 test -f model/adapter_config.json
