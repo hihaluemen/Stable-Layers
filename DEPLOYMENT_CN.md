@@ -65,7 +65,23 @@ print(snapshot_download(
 PY
 ```
 
-检查 fork 的 LoRA 文件：
+下载 Stable-Layers LoRA。压缩包部署时不会包含大模型权重和 LoRA，需要单独下载到当前目录的 `model/`；如果你是通过 Git LFS 完整拉取 fork，也可以跳过下载并直接检查文件。
+
+```bash
+mkdir -p "$PWD/model"
+python - <<'PY'
+from huggingface_hub import snapshot_download
+
+path = snapshot_download(
+    repo_id='StabilityLabs/Stable-Layers',
+    local_dir='./model',
+    local_dir_use_symlinks=False,
+)
+print(path)
+PY
+```
+
+检查 LoRA 文件：
 
 如果出现 `cas-server.xethub.hf.co`、`401 Unauthorized` 或 `File reconstruction error`，通常是 Xet 网络/认证失败，不是磁盘已满。保留缓存目录后重新运行下载命令即可续传：
 
