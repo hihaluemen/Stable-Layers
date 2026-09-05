@@ -82,6 +82,26 @@ python decompose.py --input images/ --output results/ --transparent
 python decompose.py --input photo.png --output results/ --lora ./model
 ```
 
+## HTTP service for the pearl-layout application
+
+The fork includes a small single-GPU HTTP wrapper in `serve.py`. It returns
+transparent RGBA layers, alpha-derived source bounding boxes, and stable layer
+ordering. Install the service dependencies in the same environment as the
+inference dependencies:
+
+```bash
+pip install -r requirements-server.txt
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HOME=/data/huggingface
+export STABLE_LAYERS_LORA=$PWD/model
+uvicorn serve:app --host 0.0.0.0 --port 8080 --workers 1
+```
+
+Check it with `GET /health`, then send an image to
+`POST /v1/layer-decomposition` as multipart field `image`. Keep one worker per
+GPU. The wrapper invokes the published CLI for each request, so it is intended
+for validation and low-volume use until a long-lived pipeline worker is added.
+
 ## Outputs
 
 ```
