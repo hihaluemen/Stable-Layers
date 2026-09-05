@@ -134,6 +134,7 @@ export HF_ENDPOINT=https://hf-mirror.com
 export HF_HOME=/data/huggingface
 export STABLE_LAYERS_LORA=$PWD/model
 export STABLE_LAYERS_TIMEOUT_SECONDS=1800
+export STABLE_LAYERS_ALPHA_THRESHOLD=16
 
 uvicorn serve:app --host 0.0.0.0 --port 8080 --workers 1
 ```
@@ -148,6 +149,8 @@ curl -X POST http://127.0.0.1:8080/v1/layer-decomposition \
 ```
 
 服务返回 RGBA 图层的 base64、alpha bbox、图层顺序和坐标画布尺寸。每张 GPU 只运行一个 worker；当前服务复用 `decompose.py`，每次请求会重新加载模型，适合验证和低频请求。高并发前应改成长驻模型进程。
+
+服务默认把 alpha 小于 16 的近透明扩散噪声清零后再计算 bbox。若模型输出边缘仍有噪声，可将 `STABLE_LAYERS_ALPHA_THRESHOLD` 调高到 24 或 32；如果主体被误删，再调低到 8。
 
 ## 6. 对接主项目
 

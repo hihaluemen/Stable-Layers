@@ -19,6 +19,7 @@ import tempfile
 import uuid
 from pathlib import Path
 
+import numpy as np
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image
 
@@ -32,6 +33,7 @@ GUIDANCE = float(os.getenv("STABLE_LAYERS_GUIDANCE", "1.0"))
 NUM_LAYERS = int(os.getenv("STABLE_LAYERS_NUM_LAYERS", "4"))
 SIZE = int(os.getenv("STABLE_LAYERS_SIZE", "640"))
 TIMEOUT = int(os.getenv("STABLE_LAYERS_TIMEOUT_SECONDS", "1800"))
+ALPHA_THRESHOLD = max(0, min(255, int(os.getenv("STABLE_LAYERS_ALPHA_THRESHOLD", "16"))))
 
 app = FastAPI(title="Stable-Layers inference service", version="1")
 
@@ -48,6 +50,7 @@ def health() -> dict:
             "guidance_scale": GUIDANCE,
             "num_layers": NUM_LAYERS,
             "size": SIZE,
+            "alpha_threshold": ALPHA_THRESHOLD,
         },
     }
 
@@ -103,7 +106,7 @@ async def layer_decomposition(image: UploadFile = File(...)) -> dict:
                 continue
             payload = layer_path.read_bytes()
             with Image.open(io.BytesIO(payload)) as layer:
-                rgba = layer.convert("RGBA")
+                rgba = _clean_alpha(layer.convert("RGBA"))
                 alpha = rgba.getchannel("A")
                 bbox = alpha.getbbox()
                 if bbox is None:
@@ -132,3 +135,14 @@ async def layer_decomposition(image: UploadFile = File(...)) -> dict:
         }
     finally:
         shutil.rmtree(job, ignore_errors=True)
+
+
+def _clean_alpha(rgba: Image.Image) -> Image.Image:
+    """Remove near-transparent diffusion noise before bbox calculation."""
+    if ALPHA_THRESHOLD <= 0:
+        return rgba
+    pixels = np.asarray(rgba).copy()
+    alpha = pixels[:, :, 3]
+    alpha[alpha < ALPHA_THRESHOLD] = 0
+    pixels[:, :, 3] = alpha
+    return Image.fromarray(pixels, mode="RGBA")
